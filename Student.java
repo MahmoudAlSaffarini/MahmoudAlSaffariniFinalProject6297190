@@ -34,6 +34,11 @@ public class Student {
         this.registeredCourses = new ArrayList<>();
     }
 
+    /**
+     *
+     * @param course
+     * @return
+     */
     public boolean registerCourse(Course course) {
         if (registeredCourses.contains(course)) {
             return false;
@@ -43,7 +48,29 @@ public class Student {
         return true;
     }
 
-    public boolean
+    /**
+     *
+     * @param course
+     * @return
+     */
+    public boolean dropCourse(Course course) {
+        if (!registeredCourses.contains(course)) {
+            return false;
+        }
+        registeredCourses.remove(course);
 
+        return true;
+    }
 
+    /**
+     *
+     * @return
+     */
+    public String toSimplifiedString() {
+        return String.format("%s %s %s", gender, address, department);
+    }
+
+    public void setStudentName(String studentName) {
+        this.studentName = Util.toTitleCase(studentName);
+    }
 }
