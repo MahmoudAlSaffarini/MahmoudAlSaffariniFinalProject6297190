@@ -5,6 +5,7 @@ import lombok.*;
 @Getter
 @Setter
 @EqualsAndHashCode
+@ToString
 public class Address {
 
     private int streetNo;
@@ -14,7 +15,7 @@ public class Address {
     private String postalCode;
 
     /**
-     * Checks if postalCode is valid or not using the CDCDCD format.
+     * Checks if postalCode is valid using the CDCDCD format.
      * @param postalCode the input postal code.
      * @return true if postal Code uses the CDCDCD format, else false.
      */
@@ -57,14 +58,9 @@ public class Address {
         }
     }
 
-    @Override
-    public String toString() {
-        return "Address{" +
-                "streetNo=" + streetNo +
-                ", street='" + street + '\'' +
-                ", city='" + city + '\'' +
-                ", province=" + province +
-                ", postalCode='" + postalCode + '\'' +
-                '}';
+    public void setPostalCode(String postalCode) {
+        if (isPostalCodeValid(postalCode)) {
+             this.postalCode = postalCode.toUpperCase();
+        }
     }
 }
