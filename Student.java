@@ -42,7 +42,7 @@ public class Student {
         }
         registeredCourses.add(course);
 
-        //course.registerStudent(this);
+           course.registerStudent(this);
 
         return true;
     }
@@ -58,7 +58,7 @@ public class Student {
         }
         registeredCourses.remove(course);
 
-        // course.removeStudent(this);
+           course.removeStudent(this);
 
         return true;
     }

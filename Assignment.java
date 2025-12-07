@@ -38,6 +38,9 @@ public class Assignment {
 //        // Later
 //    }
 
+    /**
+     *
+     */
     private void generateAssignmentId() {
         this.assignmentId = String.format("A%02d", nextId);
         nextId++;
