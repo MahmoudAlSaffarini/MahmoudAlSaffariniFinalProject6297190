@@ -11,15 +11,14 @@ import lombok.ToString;
 @ToString
 public class Assignment {
 
-    private String assignmentID;
+    private String assignmentId;
     private String assignmentName;
     private double weight;
     private int maxScore;
     private static int nextId = 1;
 
     public Assignment(String assignmentName, double weight, int maxScore) {
-        this.assignmentID = String.format("A%02d", nextId);
-        nextId++;
+        generateAssignmentId();
 
         this.assignmentName = Util.toTitleCase(assignmentName);
 
@@ -29,11 +28,7 @@ public class Assignment {
             this.weight = 0;
         }
 
-        if (maxScore > 0) {
-            this.maxScore = maxScore;
-        } else {
-            this.maxScore = 0;
-        }
+        this.maxScore = Math.max(maxScore, 0);
     }
 
 //    /**
@@ -44,7 +39,7 @@ public class Assignment {
 //    }
 
     private void generateAssignmentId() {
-        this.assignmentName = String.format("A%02d", nextId);
+        this.assignmentId = String.format("A%02d", nextId);
         nextId++;
     }
 
