@@ -18,7 +18,6 @@ public class Course {
     private Department department;
     private List<Assignment> assignments;
     private List<Student> registeredStudents;
-    private List<List<Double>> studentScores;
     private static int nextId = 1;
 
     public Course(String courseName, double credits, Department department) {
@@ -31,15 +30,18 @@ public class Course {
         }
 
         this.department = department;
-
         this.assignments = new ArrayList<>();
         this.registeredStudents = new ArrayList<>();
-        this.studentScores = new ArrayList<>();
 
         this.courseId = String.format("C-%s-%02d", department.getDepartmentId(), nextId);
         nextId++;
     }
 
+    /**
+     *
+     * @param student
+     * @return
+     */
     public boolean registerStudent(Student student) {
         if (registeredStudents.contains(student)) {
             return false;
@@ -58,15 +60,26 @@ public class Course {
         return true;
     }
 
-    public void addAssignment(String assignmentName, double weight, int maxScore) {
-        Assignment newAssignment = new Assignment(assignmentName, weight, maxScore);
+    /**
+     *
+     * @param assignmentName
+     * @param weight
+     */
+    public void addAssignment(String assignmentName, double weight) {
+        Assignment newAssignment = new Assignment(assignmentName, weight);
         assignments.add(newAssignment);
 
-        for (List<Double> studentScoreList : studentScores) {
-            studentScoreList.add(null);
+        if (studentScores != null) {
+            for (List<Double> studentScoreList : studentScores) {
+                studentScoreList.add(null);
+            }
         }
     }
 
+    /**
+     *
+     * @return
+     */
     public double calcStudentsAverage() {
         if (registeredStudents.isEmpty()) {
             return 0.0;
@@ -75,6 +88,10 @@ public class Course {
         return 0.0;
     }
 
+    /**
+     *
+     * @return
+     */
     public String toSimplifiedString() {
         return String.format("%s %s %s", courseId, courseName, department.getDepartmentName());
     }
