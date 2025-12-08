@@ -54,28 +54,29 @@ public class Assignment {
 
     /**
      * Generates random scores for all students in an assignment.
-     * @param numOfStudents the # of random scores to generate.
      */
-    public void generateRandomScore(int numOfStudents) {
+    public void generateRandomScore() {
         Random random = new Random();
-        this.scores = new ArrayList<>();
 
-        for (int i = 0; i < numOfStudents; i++) {
-            int randomInt = random.nextInt(11);
-            int score;
+        for (int i = 0; i < scores.size(); i++) {
+            if (scores.get(i) == null) {
+                int randomInt = random.nextInt(11);
+                int score;
 
-            if (randomInt == 0) {
-                score = random.nextInt(60);
-            } else if (randomInt <= 2) {
-                score = 60 + random.nextInt(10);
-            } else if (randomInt <= 4) {
-                score = 70 + random.nextInt(10);
-            } else if (randomInt <= 8) {
-                score = 80 + random.nextInt(10);
-            } else {
-                score = 90 + random.nextInt(11);
+                if (randomInt == 0) {
+                    score = random.nextInt(60);
+                } else if (randomInt <= 2) {
+                    score = 60 + random.nextInt(10);
+                } else if (randomInt <= 4) {
+                    score = 70 + random.nextInt(10);
+                } else if (randomInt <= 8) {
+                    score = 80 + random.nextInt(10);
+                } else {
+                    score = 90 + random.nextInt(11);
+                }
+
+                scores.set(i, score);
             }
-            scores.add(score);
         }
     }
 
@@ -87,4 +88,4 @@ public class Assignment {
                 ", weight=" + weight +
                 '}';
     }
-}
+ }

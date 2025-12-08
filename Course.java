@@ -11,105 +11,183 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode
 public class Course {
-
     private String courseId;
     private String courseName;
     private double credits;
     private Department department;
     private List<Assignment> assignments;
     private List<Student> registeredStudents;
+    private List<Double> finalScores;
     private static int nextId = 1;
+
 
     public Course(String courseName, double credits, Department department) {
         this.courseName = Util.toTitleCase(courseName);
-
-        if (credits > 0) {
-            this.credits = credits;
-        } else {
-            this.credits = 0;
-        }
-
+        this.credits = credits;
         this.department = department;
         this.assignments = new ArrayList<>();
         this.registeredStudents = new ArrayList<>();
+        this.finalScores = new ArrayList<>();
 
-        this.courseId = String.format("C-%s-%02d", department.getDepartmentId(), nextId);
-        nextId++;
+        this.courseId = "C-" + department.getDepartmentId() +
+                "-" + String.format("%02d", nextId++);
     }
 
     /**
-     *
-     * @param student
-     * @return
+     * Checks if the sum of weights of all assignments of that course equal to 100%.
+     * @return true if sum of all assignments equals to 100.0, else false.
+     */
+    public boolean isAssignmentWeightValid() {
+        double sum = 0;
+        for (Assignment assignment : assignments) {
+            sum += assignment.getWeight();
+        }
+        return Math.abs(sum - 100.0) < 0.0001;
+    }
+
+    /**
+     * Registers student to the course.
+     * @param student The student to be registered.
+     * @return true if student is successfully registered.
      */
     public boolean registerStudent(Student student) {
         if (registeredStudents.contains(student)) {
             return false;
         }
-
         registeredStudents.add(student);
 
-        List<Double> scores = new ArrayList<>();
-        for (int i = 0; i < assignments.size(); i++) {
-            scores.add(null);
+        for (Assignment assignment : assignments) {
+            assignment.getScores().add(null);
         }
-        studentScores.add(scores);
 
-        student.registerCourse(this);
-
+        finalScores.add(null);
         return true;
     }
 
     /**
-     *
-     * @param assignmentName
-     * @param weight
+     * Calculates the weighted average score of registered students.
+     * @return the weighted average score of registered students (int array).
      */
-    public void addAssignment(String assignmentName, double weight) {
-        Assignment newAssignment = new Assignment(assignmentName, weight);
-        assignments.add(newAssignment);
-
-        if (studentScores != null) {
-            for (List<Double> studentScoreList : studentScores) {
-                studentScoreList.add(null);
+    public int[] calcStudentsAverage() {
+        int[] averages = new int[registeredStudents.size()];
+        for (int i = 0; i < finalScores.size(); i++) {
+            if (finalScores.get(i) != null) {
+                averages[i] = (int) Math.round(finalScores.get(i));
+            } else {
+                averages[i] = 0;
             }
         }
+        return averages;
     }
 
     /**
-     *
-     * @return
+     * Adds a new assignment to the course.
+     * @param assignmentName the name of the assignment.
+     * @param weight the weight of the assignment.
+     * @return true if the assignment is added to the course.
      */
-    public double calcStudentsAverage() {
-        if (registeredStudents.isEmpty()) {
-            return 0.0;
+    public boolean addAssignment(String assignmentName, double weight) {
+        Assignment assignment = new Assignment(assignmentName, weight);
+
+        for (int i = 0; i < registeredStudents.size(); i++) {
+            assignment.getScores().add(null);
+        }
+        assignments.add(assignment);
+        return true;
+    }
+
+    /**
+     * Generates random scores for each assignment and student, and calculates the final score for each student.
+     */
+    public void generateScores() {
+        for (Assignment assignment : assignments) {
+            assignment.generateRandomScore();
         }
 
-        return 0.0;
+        for (int i = 0; i < registeredStudents.size(); i++) {
+            double calculatedScore = 0;
+            for (Assignment assignment : assignments) {
+                if (i < assignment.getScores().size()) {
+                    Integer score = assignment.getScores().get(i);
+                    if (score != null) {
+                        calculatedScore += score * (assignment.getWeight() / 100.0);
+                    }
+                }
+            }
+            finalScores.set(i, calculatedScore);
+        }
     }
 
     /**
      *
-     * @return
      */
-    public String toSimplifiedString() {
-        return String.format("%s %s %s", courseId, courseName, department.getDepartmentName());
+    public void displayScores() {
+        System.out.printf("Course Name: %s(%s)\n", courseName, courseId);
+
+        System.out.printf("%-20s", "");
+        for (Assignment assignment : assignments) {
+            System.out.printf("%-20s", assignment.getAssignmentName());
+        }
+        System.out.printf("%-20s\n", "Final Score");
+
+        for (int i = 0; i < registeredStudents.size(); i++) {
+            System.out.printf("%-20s", registeredStudents.get(i).getStudentName());
+
+            for (Assignment assignment : assignments) {
+                Integer score = assignment.getScores().get(i);
+                System.out.printf("%-20d", score == null ? 0 : score);
+            }
+
+            Double finalScore = finalScores.get(i);
+            System.out.printf("%-20.0f\n", finalScore == null ? 0.0 : finalScore);
+        }
+
+        System.out.printf("%-20s", "Average");
+        for (Assignment assignment : assignments) {
+            System.out.printf("%-20.0f", assignment.calcAssignmentAvg());
+        }
+
+        double classTotalSum = 0;
+        int classCount = 0;
+
+        for (Double finalScore : finalScores) {
+            if (finalScore != null) {
+                classTotalSum += finalScore;
+                classCount++;
+            }
+        }
+
+        double classFinalAvg = classCount == 0 ? 0 : classTotalSum / classCount;
+        System.out.printf("%-20.0f\n", classFinalAvg);
     }
 
-    public void setCourseName(String courseName) {
-        this.courseName = Util.toTitleCase(courseName);
+    /**
+     * Converts a course to a simple string.
+     * @return A simple string with courseId, courseName, credits, and departmentName.
+     */
+    public String toSimplifiedString() {
+        return courseId + " " + courseName + " " + credits + " " + department.getDepartmentName();
     }
 
     @Override
     public String toString() {
+        String studentsString = "[";
+        for (int i = 0; i < registeredStudents.size(); i++) {
+            studentsString += registeredStudents.get(i).toSimplifiedString();
+            if (i < registeredStudents.size() - 1) {
+                studentsString += ", ";
+            }
+        }
+        studentsString += "]";
+
         return "Course{" +
                 "courseId='" + courseId + '\'' +
                 ", courseName='" + courseName + '\'' +
                 ", credits=" + credits +
                 ", department=" + department +
                 ", assignments=" + assignments +
-                ", registeredStudents=" + registeredStudents +
-                ", studentScores=" + studentScores +
+                ", registeredStudents=" + studentsString +
+                ", isAssignmentWeightValid=" + isAssignmentWeightValid() +
                 '}';
     }
 }
