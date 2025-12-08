@@ -44,12 +44,20 @@ public class Assignment {
         }
 
         double sum = 0;
+        int count = 0;
+
         for (Integer score : scores) {
             if (score != null) {
                 sum += score;
+                count++;
             }
         }
-        return sum / scores.size();
+
+        if (count == 0) {
+            return 0.0;
+        }
+
+        return sum / count;
     }
 
     /**
