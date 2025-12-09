@@ -119,7 +119,7 @@ public class Course {
     }
 
     /**
-     *
+     * Displays the scores of a course in a table, with the assignment averages and student weighted average (helper methods might be required)
      */
     public void displayScores() {
         System.out.printf("Course Name: %s(%s)\n", courseName, courseId);
